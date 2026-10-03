@@ -1,0 +1,7 @@
+streamlit>=1.50
+scikit-surprise
+pandas
+numpy
+matplotlib
+seaborn
+scikit-learn

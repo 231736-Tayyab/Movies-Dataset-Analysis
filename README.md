@@ -1,7 +1,3 @@
-import pypandoc
-from pathlib import Path
-
-md = r"""# MovieLens 100K – SVD vs KNN Movie Rating Prediction
 
 ## Project Overview
 

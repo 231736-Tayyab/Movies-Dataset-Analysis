@@ -1,0 +1,41 @@
+{
+  "project": "MovieLens 100K Movie Recommendation",
+  "problem_type": "Collaborative-filtering rating regression",
+  "model": "Surprise SVD",
+  "training_data": "u.data (MovieLens 100K)",
+  "training_script": "api/train_model.py",
+  "artifact": "models/movielens_svd",
+  "rating_scale": [1, 5],
+  "like_threshold": 4,
+  "features": [
+    {
+      "name": "user_id",
+      "type": "integer",
+      "valid_values": "1-943"
+    },
+    {
+      "name": "movie_id",
+      "type": "integer",
+      "valid_values": "1-1682"
+    }
+  ],
+  "preprocessing": "None; the model is trained on MovieLens user_id, movie_id, and rating columns.",
+  "hyperparameters": {
+    "n_factors": 100,
+    "n_epochs": 20,
+    "lr_all": 0.005,
+    "reg_all": 0.02,
+    "random_state": 42
+  },
+  "sample_payload": "sample_payload.json",
+  "research": "Scientific Reports (2025), DOI: 10.1038/s41598-025-15096-4",
+  "tested_environment": {
+    "python": "3.12.10",
+    "flask": "3.1.3",
+    "surprise": "1.1.5",
+    "pandas": "2.2.3",
+    "numpy": "2.2.6",
+    "node": "24.13.1",
+    "angular": "21.2"
+  }
+}

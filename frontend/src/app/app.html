@@ -1,0 +1,156 @@
+<main class="page-shell">
+  <header class="hero">
+    <div class="hero-copy">
+      <p class="eyebrow">MOVIELENS 100K · COLLABORATIVE FILTERING</p>
+      <h1>Find your next <span>favorite film.</span></h1>
+      <p class="intro">
+        Explore personalized picks and rating predictions from a trained SVD
+        recommendation model.
+      </p>
+    </div>
+    <div class="model-chip"><span class="status-dot"></span> SVD · 100K ratings</div>
+  </header>
+
+  @if (isStaticDemo) {
+    <aside class="notice demo-notice">
+      <strong>Static demo</strong>
+      <span>
+        GitHub Pages hosts this interface only. The sample results below are illustrative;
+        the Flask model runs locally and is not available on this public page.
+      </span>
+    </aside>
+  } @else if (loadingCatalog()) {
+    <aside class="notice">Loading the MovieLens catalog from the local API…</aside>
+  }
+
+  @if (errorMessage()) {
+    <aside class="notice error-notice" role="alert">{{ errorMessage() }}</aside>
+  }
+
+  @if (catalog(); as catalogData) {
+    <section class="workspace">
+      <article class="panel recommendations-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">PERSONALIZED DISCOVERY</p>
+            <h2>Recommendations</h2>
+          </div>
+          <span class="heading-icon" aria-hidden="true">✦</span>
+        </div>
+        <p class="panel-description">
+          Choose a user and narrow the list by genre, release year, and popularity.
+        </p>
+
+        <form [formGroup]="recommendationForm" (ngSubmit)="recommend()" class="form-grid">
+          <label>
+            MovieLens user
+            <select formControlName="userId">
+              @for (user of catalogData.users; track user) {
+                <option [ngValue]="user">User {{ user }}</option>
+              }
+            </select>
+          </label>
+          <label>
+            Genre
+            <select formControlName="genre">
+              <option value="">Any genre</option>
+              @for (genre of catalogData.genres; track genre) {
+                <option [value]="genre">{{ genre }}</option>
+              }
+            </select>
+          </label>
+          <label>
+            Release year from
+            <input type="number" formControlName="yearMin" [min]="catalogData.year_range[0]" [max]="catalogData.year_range[1]" />
+          </label>
+          <label>
+            Through year
+            <input type="number" formControlName="yearMax" [min]="catalogData.year_range[0]" [max]="catalogData.year_range[1]" />
+          </label>
+          <label>
+            Minimum ratings
+            <input type="number" formControlName="minRatings" min="0" max="100000" />
+          </label>
+          <label>
+            Number of picks
+            <input type="number" formControlName="limit" min="1" max="30" />
+          </label>
+          <button class="primary-button span-two" type="submit"
+            [disabled]="recommendationForm.invalid || busyAction() !== null">
+            {{ busyAction() === 'recommend' ? 'Finding movies…' : 'Show recommendations' }}
+            <span aria-hidden="true">→</span>
+          </button>
+        </form>
+
+        @if (recommendations().length) {
+          <div class="results" aria-live="polite">
+            <h3>{{ recommendations().length }} recommended movies</h3>
+            @for (movie of recommendations(); track movie.movie_id) {
+              <div class="movie-row">
+                <div class="movie-copy">
+                  <strong>{{ movie.title }}</strong>
+                  <span>{{ movie.year ?? 'Year unknown' }} · {{ movie.genres }}</span>
+                </div>
+                <div class="score"><strong>{{ movie.predicted_rating.toFixed(2) }}</strong><span>predicted ★</span></div>
+              </div>
+            }
+          </div>
+        }
+      </article>
+
+      <article class="panel prediction-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">MODEL EXPLORER</p>
+            <h2>Predict a rating</h2>
+          </div>
+          <span class="heading-icon" aria-hidden="true">↗</span>
+        </div>
+        <p class="panel-description">
+          See how the model scores a movie for a specific MovieLens user.
+        </p>
+
+        <form [formGroup]="predictionForm" (ngSubmit)="predict()" class="form-grid">
+          <label class="span-two">
+            MovieLens user
+            <select formControlName="userId">
+              @for (user of catalogData.users; track user) {
+                <option [ngValue]="user">User {{ user }}</option>
+              }
+            </select>
+          </label>
+          <label class="span-two">
+            Movie
+            <select formControlName="movieId">
+              @for (movie of catalogData.movies; track movie.movie_id) {
+                <option [ngValue]="movie.movie_id">{{ movie.title }}{{ movie.year ? ' (' + movie.year + ')' : '' }}</option>
+              }
+            </select>
+          </label>
+          <button class="secondary-button span-two" type="submit"
+            [disabled]="predictionForm.invalid || busyAction() !== null">
+            {{ busyAction() === 'predict' ? 'Predicting…' : 'Predict rating' }}
+            <span aria-hidden="true">→</span>
+          </button>
+        </form>
+
+        @if (prediction(); as result) {
+          <div class="prediction-result" aria-live="polite">
+            <p class="eyebrow">PREDICTED FOR USER {{ result.user_id }}</p>
+            <h3>{{ result.movie.title }}</h3>
+            <div class="rating-value">{{ result.predicted_rating.toFixed(2) }}<span> / 5</span></div>
+            <p class="verdict" [class.positive]="result.likely_to_like">
+              {{ result.likely_to_like ? 'Likely to enjoy' : 'May not be a match' }}
+              <span>· liked threshold {{ result.like_threshold }} ★</span>
+            </p>
+          </div>
+        }
+      </article>
+    </section>
+  }
+
+  <footer>
+    <span>MovieLens 100K · SVD matrix factorization</span>
+    <span>Recommendations exclude movies the selected user has already rated.</span>
+  </footer>
+</main>

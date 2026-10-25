@@ -1,7 +1,9 @@
 streamlit>=1.50
-scikit-surprise
+scikit-surprise==1.1.5
 pandas
 numpy
 matplotlib
 seaborn
 scikit-learn
+Flask>=3.0,<4
+pytest>=8.0,<9

@@ -10,6 +10,11 @@ dist/
 venv/
 env/
 
+# Node and Angular build outputs
+node_modules/
+frontend/dist/
+frontend/.angular/
+
 # Jupyter
 .ipynb_checkpoints/
 

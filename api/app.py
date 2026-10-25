@@ -24,7 +24,7 @@ def get_model():
 def get_catalog() -> tuple[pd.DataFrame, pd.DataFrame]:
     ratings = load_ratings()
     movies = pd.read_csv(MOVIES_PATH)
-    movies["title"] = movies["title"].fillna("").astype(str)
+    movies["title"] = movies["title"].fillna("").astype(str).str.title()
     movies["genres"] = movies["genres"].fillna("").astype(str)
     stats = ratings.groupby("movie_id")["rating"].agg(
         n_ratings="count", avg_rating="mean"

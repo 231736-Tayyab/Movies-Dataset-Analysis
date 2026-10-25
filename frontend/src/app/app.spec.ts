@@ -41,7 +41,7 @@ describe('App', () => {
     fixture.detectChanges();
 
     const rendered = fixture.nativeElement as HTMLElement;
-    expect(rendered.querySelector('h1')?.textContent).toContain('favorite film');
+    expect(rendered.querySelector('h1')?.textContent).toContain('worth');
     expect(rendered.textContent).toContain('Recommendations');
     expect(rendered.textContent).toContain('Predict a rating');
   });

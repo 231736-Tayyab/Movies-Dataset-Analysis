@@ -1,17 +1,39 @@
-/* You can add global styles to this file, and also import other style files */
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  color-scheme: light;
+  --canvas: #f4f6f8;
+  --surface: #ffffff;
+  --ink: #1b2a3a;
+  --muted: #687789;
+  --line: #dce3e9;
+  --accent: #3b6485;
+  --accent-hover: #294d6b;
+  --gold: #c39a54;
+}
 
 * {
   box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  min-height: 100%;
+  background: var(--canvas);
 }
 
 body {
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
-  background:
-    radial-gradient(ellipse at 8% 1%, rgb(117 102 215 / 8%), transparent 33rem),
-    #f7f8fc;
-  color: #20283b;
+  background: var(--canvas);
+  color: var(--ink);
   font-family: 'DM Sans', 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: #dce8f0;
+  color: var(--ink);
 }

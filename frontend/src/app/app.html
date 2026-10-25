@@ -1,26 +1,23 @@
 <main class="page-shell">
-  <header class="hero">
-    <div class="hero-copy">
-      <p class="eyebrow">MOVIELENS 100K · COLLABORATIVE FILTERING</p>
-      <h1>Find your next <span>favorite film.</span></h1>
-      <p class="intro">
-        Explore personalized picks and rating predictions from a trained SVD
-        recommendation model.
-      </p>
-    </div>
-    <div class="model-chip"><span class="status-dot"></span> SVD · 100K ratings</div>
+  <header class="masthead">
+    <a class="brand" href="/" aria-label="MovieLens home">MovieLens<span>.</span></a>
+    <div class="model-chip">MovieLens 100K <span class="chip-divider">·</span> SVD</div>
   </header>
+
+  <section class="hero">
+    <p class="eyebrow">PERSONALIZED MOVIE RECOMMENDATIONS</p>
+    <h1>Find a film worth<br class="desktop-break" /> your evening.</h1>
+    <p class="intro">
+      Discover something new from MovieLens 100K, or see what the model predicts you’ll rate.
+    </p>
+  </section>
 
   @if (isStaticDemo) {
     <aside class="notice demo-notice">
-      <strong>Static demo</strong>
-      <span>
-        GitHub Pages hosts this interface only. The sample results below are illustrative;
-        the Flask model runs locally and is not available on this public page.
-      </span>
+      <strong>Demo mode.</strong> This page shows sample results. Live predictions require the local Flask API.
     </aside>
   } @else if (loadingCatalog()) {
-    <aside class="notice">Loading the MovieLens catalog from the local API…</aside>
+    <aside class="notice">Loading movies from the local API…</aside>
   }
 
   @if (errorMessage()) {
@@ -31,27 +28,24 @@
     <section class="workspace">
       <article class="panel recommendations-panel">
         <div class="panel-heading">
-          <div>
-            <p class="eyebrow">PERSONALIZED DISCOVERY</p>
-            <h2>Recommendations</h2>
-          </div>
-          <span class="heading-icon" aria-hidden="true">✦</span>
+          <p class="eyebrow">FOR YOUR WATCHLIST</p>
+          <h2>Recommendations</h2>
+          <p class="panel-description">
+            Choose a viewer and a few filters to find movies they haven’t rated yet.
+          </p>
         </div>
-        <p class="panel-description">
-          Choose a user and narrow the list by genre, release year, and popularity.
-        </p>
 
         <form [formGroup]="recommendationForm" (ngSubmit)="recommend()" class="form-grid">
           <label>
-            MovieLens user
+            <span>Viewer</span>
             <select formControlName="userId">
               @for (user of catalogData.users; track user) {
-                <option [ngValue]="user">User {{ user }}</option>
+                <option [ngValue]="user">MovieLens user {{ user }}</option>
               }
             </select>
           </label>
           <label>
-            Genre
+            <span>Genre</span>
             <select formControlName="genre">
               <option value="">Any genre</option>
               @for (genre of catalogData.genres; track genre) {
@@ -60,67 +54,71 @@
             </select>
           </label>
           <label>
-            Release year from
+            <span>Release year from</span>
             <input type="number" formControlName="yearMin" [min]="catalogData.year_range[0]" [max]="catalogData.year_range[1]" />
           </label>
           <label>
-            Through year
+            <span>Through year</span>
             <input type="number" formControlName="yearMax" [min]="catalogData.year_range[0]" [max]="catalogData.year_range[1]" />
           </label>
           <label>
-            Minimum ratings
+            <span>Minimum ratings</span>
             <input type="number" formControlName="minRatings" min="0" max="100000" />
           </label>
           <label>
-            Number of picks
+            <span>Number of movies</span>
             <input type="number" formControlName="limit" min="1" max="30" />
           </label>
           <button class="primary-button span-two" type="submit"
             [disabled]="recommendationForm.invalid || busyAction() !== null">
-            {{ busyAction() === 'recommend' ? 'Finding movies…' : 'Show recommendations' }}
+            {{ busyAction() === 'recommend' ? 'Finding recommendations…' : 'Find recommendations' }}
             <span aria-hidden="true">→</span>
           </button>
         </form>
 
         @if (recommendations().length) {
           <div class="results" aria-live="polite">
-            <h3>{{ recommendations().length }} recommended movies</h3>
+            <div class="results-heading">
+              <h3>Your recommendations</h3>
+              <span>{{ recommendations().length }} movies</span>
+            </div>
             @for (movie of recommendations(); track movie.movie_id) {
               <div class="movie-row">
                 <div class="movie-copy">
                   <strong>{{ movie.title }}</strong>
-                  <span>{{ movie.year ?? 'Year unknown' }} · {{ movie.genres }}</span>
+                  <span>{{ movie.year ?? 'Year unknown' }} <i>·</i> {{ movie.genres }}</span>
                 </div>
-                <div class="score"><strong>{{ movie.predicted_rating.toFixed(2) }}</strong><span>predicted ★</span></div>
+                <div class="score">
+                  <strong>{{ movie.predicted_rating.toFixed(2) }}</strong>
+                  <span>predicted / 5</span>
+                </div>
               </div>
             }
+            <p class="results-note">Scores are estimates based on rating patterns in the dataset.</p>
           </div>
         }
       </article>
 
       <article class="panel prediction-panel">
         <div class="panel-heading">
-          <div>
-            <p class="eyebrow">MODEL EXPLORER</p>
-            <h2>Predict a rating</h2>
-          </div>
-          <span class="heading-icon" aria-hidden="true">↗</span>
+          <p class="eyebrow">MODEL ESTIMATE</p>
+          <h2>Predict a rating</h2>
+          <p class="panel-description">
+            Select a viewer and a movie to see the model’s estimated rating.
+          </p>
         </div>
-        <p class="panel-description">
-          See how the model scores a movie for a specific MovieLens user.
-        </p>
 
-        <form [formGroup]="predictionForm" (ngSubmit)="predict()" class="form-grid">
+        <form [formGroup]="predictionForm" (ngSubmit)="predict()" class="form-grid prediction-form">
           <label class="span-two">
-            MovieLens user
+            <span>Viewer</span>
             <select formControlName="userId">
               @for (user of catalogData.users; track user) {
-                <option [ngValue]="user">User {{ user }}</option>
+                <option [ngValue]="user">MovieLens user {{ user }}</option>
               }
             </select>
           </label>
           <label class="span-two">
-            Movie
+            <span>Movie</span>
             <select formControlName="movieId">
               @for (movie of catalogData.movies; track movie.movie_id) {
                 <option [ngValue]="movie.movie_id">{{ movie.title }}{{ movie.year ? ' (' + movie.year + ')' : '' }}</option>
@@ -136,13 +134,20 @@
 
         @if (prediction(); as result) {
           <div class="prediction-result" aria-live="polite">
-            <p class="eyebrow">PREDICTED FOR USER {{ result.user_id }}</p>
+            <p class="result-caption">Predicted for MovieLens user {{ result.user_id }}</p>
             <h3>{{ result.movie.title }}</h3>
-            <div class="rating-value">{{ result.predicted_rating.toFixed(2) }}<span> / 5</span></div>
+            <div class="rating-line">
+              <div class="rating-value">{{ result.predicted_rating.toFixed(2) }}<span> / 5</span></div>
+              <span class="rating-star" aria-hidden="true">★</span>
+            </div>
             <p class="verdict" [class.positive]="result.likely_to_like">
-              {{ result.likely_to_like ? 'Likely to enjoy' : 'May not be a match' }}
-              <span>· liked threshold {{ result.like_threshold }} ★</span>
+              {{ result.likely_to_like ? 'Likely to be liked' : 'Less likely to be liked' }}
             </p>
+            <p class="threshold-note">“Likely” means a predicted rating of {{ result.like_threshold }} stars or higher.</p>
+          </div>
+        } @else {
+          <div class="prediction-empty">
+            <p>Your estimated rating will appear here.</p>
           </div>
         }
       </article>
@@ -150,7 +155,7 @@
   }
 
   <footer>
-    <span>MovieLens 100K · SVD matrix factorization</span>
-    <span>Recommendations exclude movies the selected user has already rated.</span>
+    <span>MovieLens 100K <i>·</i> SVD collaborative filtering</span>
+    <span>Recommendations exclude movies already rated by the selected viewer.</span>
   </footer>
 </main>

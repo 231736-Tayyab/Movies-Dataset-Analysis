@@ -19,6 +19,7 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
+          cache-dependency-path: Requirements.txt
       - name: Install Python dependencies
         run: python -m pip install -r Requirements.txt
       - name: Run Flask API tests
